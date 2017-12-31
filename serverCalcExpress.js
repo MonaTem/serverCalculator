@@ -5,36 +5,40 @@ var path = require('path');
 var express = require('express');
 var app = express();
 var port = process.env.PORT || 8000;
-const add = "/add/:first/:second";
-const mult = "/multiply/:first/:second";
-const work = "show_work=true";
+const add = "add";
+const mult = "multiply";
+//const work = "show_work=true";
 
-app.get('/calculator:route', function(req, res) {
-    var route = req.params.route;
-    var first = req.params.first;
-    var second = req.params.second;
+app.get('/calculator/:operator/:first/:second', function(req, res) {
+    var operator = req.params.operator;
+    var first = parseInt(req.params.first);
+    var second = parseInt(req.params.second);
     var query = req.query;
     let firstStr = first.toString();
     let secondStr = second.toString();
+    let showWork = req.query.show_work;
+    console.log(showWork);
 
-   switch (route) {
+   switch (operator) {
      case add:
            var sum = first + second;
            var sumStr = sum.toString();
-           if (query === work) {
-             let workStr = "firstStr + '+ ' + secondStr + ' =' sumStr";
-             res.sen(sumStr);
+           if (showWork === "true" || showWork === true) {
+             console.log("we are true add");
+             let workStr = `${firstStr} +  ${secondStr} = ${sumStr}`;
+             res.send(workStr);
            } else {
              res.send(sumStr);
              }
            break;
 
-     case multiply:
+     case mult:
            var product = first * second;
            var prodStr = product.toString();
-           if (query === work) {
-             let workStr = "firstStr + '*  ' + secondStr + ' =' prodStr";
-             res.sen(prodStr);
+           if (showWork === "true" || showWork === true) {
+             console.log("we are true multiply");
+             let workStr = `${firstStr} * ${secondStr} = ${prodStr}`;
+             res.send(workStr);
            } else {
            res.send(prodStr);
            }
@@ -45,8 +49,9 @@ app.get('/calculator:route', function(req, res) {
     });
 
 app.use(function(req, res) {
-  res.sendStatus(404);
   res.send("Not found");
+  res.status(404);
+
 });
 
 app.listen(port, function() {
